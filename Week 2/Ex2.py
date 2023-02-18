@@ -15,6 +15,18 @@ nVals = [20, 50, 200]
 
 xVals = list()
 
+def EulerMethod():
+    for N in nVals:
+        tVals = np.linspace(0, 10, N)
+        x0 = 0
+        h = 10/N
+        for t in tVals:
+            x1 = x0 + h*Dxdt(x0, t)
+            xVals.append(x1)
+            x0 = x1
+        plt.plot(tVals, xVals, 'r', label=f'Euler, N = {N}')
+        xVals.clear()
+
 def SecondOrderRK():
     for N in nVals:
         tVals = np.linspace(0, 10, N)
@@ -28,6 +40,7 @@ def SecondOrderRK():
             x0 = x1
         plt.plot(tVals, xVals, 'g', label=f'RK2, N = {N}')
         xVals.clear()
+EulerMethod()
 SecondOrderRK()
 plt.legend()
 plt.show()
