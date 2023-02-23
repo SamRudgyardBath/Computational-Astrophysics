@@ -43,3 +43,13 @@ def FindFinalDisp(r0): # Calculate the z displacement of the ball at t=10s
         r1 = FourthOrderRK(h, r0, t)
         r0 = r1
     return np.array([r0[0], r0[1]])
+
+def ApproxChange(r0): # Gradient of the initial velocity - final displacement at the point of consideration
+    return 1/h * (FindFinalDisp([r0[0], r0[1] + h]) - FindFinalDisp(r0)) # Adjust the initial velocity  by h, but not the initial displacement
+
+while abs(delta) > 1e-12:
+    print(f' Starting Velocity = {r0[1]}')
+    finalDisp = FindFinalDisp(r0)
+    approxChange = ApproxChange(r0)
+    delta = - finalDisp[0]/approxChange[0]
+    r0[1] += delta
