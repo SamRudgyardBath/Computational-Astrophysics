@@ -9,7 +9,7 @@ Created on Thu Feb 23 13:10:17 2023
 import numpy as np
 import matplotlib.pyplot as plt
 
-nVals = [100000]
+nVals = [1000]
 colours = ['r', 'g', 'b'] # Colour Plots
 
 G = 6.672e-11 # Gravitational Constant
@@ -42,6 +42,17 @@ def SecondOrderRK(h, r0, t):
     r1 = r0 + k2
     return r1
 
+def VerletPosition(h, r0, t):
+    pos0 = np.array([r0[0], r0[1]]) # [x0, y0]
+    v0 = np.array([r0[2], r0[3]]) # [vX0, vY0]
+    r1 = pos0 + h*v0 + (h**2)/2 * Acceleration(r0, t)
+    return r1
+
+def VerletVelocity(h, r0, t):
+    v0 = np.array([r0[2], r0[3]]) # [vX0, vY0]
+    r1 = VerletPosition(h, r0, t)
+    return v0 + h/2 * (Acceleration(r1, t + h) + Acceleration(r0, t))
+
 for N in nVals:
     t = startTime
     x0 = 1.471e11
@@ -52,6 +63,8 @@ for N in nVals:
     h = endTime/N
     tVals = np.linspace(startTime, endTime, N)
     rList = list()
+    
+    # Plot using RK2
     for t in tVals:
         r1 = SecondOrderRK(h, r0, t)
         rList.append(r1)
@@ -59,7 +72,22 @@ for N in nVals:
     rVals = np.array(rList).transpose()
     xVals = rVals[0]
     yVals = rVals[1]
-    plt.plot(xVals, yVals, f'{colours[nVals.index(N)]}o', markersize = 1, label=f'y(x), N = {N}')
+    plt.plot(xVals, yVals, 'ro', markersize = 1, label='y(x), RK4')
+    np.delete(rVals, 4)
+    
+    rList.clear()
+    
+    # Plot using Verlet Method
+    r0 = [x0, y0, vX0, vY0]
+    for t in tVals:
+        r1 = VerletPosition(h, r0, t)
+        v1 = VerletVelocity(h, r0, t)
+        rList.append(r1)
+        r0 = [r1[0], r1[1], v1[0], v1[1]]
+    rVals = np.array(rList).transpose()
+    xVals = rVals[0]
+    yVals = rVals[1]
+    plt.plot(xVals, yVals, 'bo', markersize = 1, label='y(x), Verlet')
     np.delete(rVals, 4)
 
 plt.title('Comet Orbit')
