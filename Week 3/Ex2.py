@@ -16,9 +16,7 @@ G = 6.672e-11 # Gravitational Constant
 M = 1.989e30 # Solar Mass
 
 startTime = 0
-endTime = 2.5e9
-
-tolerance = 1e-6
+endTime = 4e7
 
 def Velocity(r, t): # dr/dt
     vX = r[2]
@@ -46,10 +44,10 @@ def SecondOrderRK(h, r0, t):
 
 for N in nVals:
     t = startTime
-    x0 = 5.2e12
+    x0 = 1.471e11
     y0 = 0
     vX0 = 0
-    vY0 = 880
+    vY0 = 30.287e3
     r0 = [x0, y0, vX0, vY0]
     h = endTime/N
     tVals = np.linspace(startTime, endTime, N)
@@ -65,6 +63,6 @@ for N in nVals:
     np.delete(rVals, 4)
 
 plt.title('Comet Orbit')
-plt.legend()
+# plt.legend()
 plt.plot(0, 0, 'o', color='gold')
 plt.show()
