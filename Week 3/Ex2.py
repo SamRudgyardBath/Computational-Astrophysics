@@ -9,14 +9,14 @@ Created on Thu Feb 23 13:10:17 2023
 import numpy as np
 import matplotlib.pyplot as plt
 
-nVals = [10, 100, 1000]
+nVals = [100000]
 colours = ['r', 'g', 'b'] # Colour Plots
 
 G = 6.672e-11 # Gravitational Constant
 M = 1.989e30 # Solar Mass
 
 startTime = 0
-endTime = 1.5e9
+endTime = 2.5e9
 
 tolerance = 1e-6
 
@@ -38,12 +38,10 @@ def VectorF(r, t):
     a = Acceleration(r, t)
     return np.array([v[0], v[1], a[0], a[1]])
 
-def FourthOrderRK(h, r0, t):
+def SecondOrderRK(h, r0, t):
     k1 = h*VectorF(r0, t)
     k2 = h*VectorF(r0 + 0.5*k1, t + 0.5*h)
-    k3 = h*VectorF(r0 + 0.5*k2, t + 0.5*h)
-    k4 = h*VectorF(r0 + k3, t + h)
-    r1 = r0 + 1/6 * (k1 + 2*k2 + 2*k3 + k4)
+    r1 = r0 + k2
     return r1
 
 for N in nVals:
@@ -54,21 +52,12 @@ for N in nVals:
     vY0 = 880
     r0 = [x0, y0, vX0, vY0]
     h = endTime/N
+    tVals = np.linspace(startTime, endTime, N)
     rList = list()
-    while t < endTime:
-        r1 = FourthOrderRK(h, r0, t)
-        doubleStepR = FourthOrderRK(h, r1, t)
-        singleStepR = FourthOrderRK(2*h, r0, t)
-        doubleStepV = np.sqrt(doubleStepR[2]**2 + doubleStepR[3]**2)
-        singleStepV = np.sqrt(singleStepR[2]**2 + singleStepR[3]**2)
-        error = 1/30 * abs(doubleStepV - singleStepV) # Eqn 20 in Lecture 2 Notes
-        if error > tolerance:
-            h *= (tolerance / error)**(1/5) # Optimal value of h
-        elif error < tolerance: # Only increase the time step when error is less than that required
-            h *= (tolerance / error)**(1/5)
-            rList.append(doubleStepR)
-            r0 = doubleStepR
-            t += h
+    for t in tVals:
+        r1 = SecondOrderRK(h, r0, t)
+        rList.append(r1)
+        r0 = r1
     rVals = np.array(rList).transpose()
     xVals = rVals[0]
     yVals = rVals[1]
