@@ -53,3 +53,11 @@ while abs(delta) > 1e-12:
     approxChange = ApproxChange(r0)
     delta = - finalDisp[0]/approxChange[0]
     r0[1] += delta
+    
+rArray = np.array(rVals).transpose()
+
+plt.plot(tVals, rArray[0], 'b', label='Position')
+plt.plot(tVals, rArray[1], 'r', label='Velocity')
+
+print(f'Value of z at t=10 is {finalDisp[0]}, delta = {delta}')
+    
